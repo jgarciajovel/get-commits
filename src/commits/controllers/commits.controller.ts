@@ -1,25 +1,45 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
+import e from 'express';
 import { Octokit, App } from "octokit";
 const octokit = new Octokit({
-    auth: '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'
+    auth: process.env.GITHUB_TOKEN
 });
 
 @Controller('commits')
 export class CommitsController {
-    @Get()
-    async commits(@Req() request): Promise<any> {
-
+    @Get(':type')
+    async commits(@Param() params): Promise<any> {
         try {
-            const commits = await octokit.request('GET /repos/{owner}/{repo}/commits{?sha,path,author,since,until,per_page,page}', {
-                owner: 'jgarciajovel',
-                repo: 'get-commits'
-            });
-    
-            return {
-                status: 'success',
-                commits: commits.data
+            const type = params.type;
+            let repo: any;
+
+            switch (type) {
+                case 'backend':
+                    repo = 'get-commits';
+                    break;
+                case 'frontend':
+                    repo = 'get-commits-frontend';
+                    break;
             }
-             
+
+            if (!!repo) {
+                const commits = await octokit.request('GET /repos/{owner}/{repo}/commits{?sha,path,author,since,until,per_page,page}', {
+                    owner: 'jgarciajovel',
+                    repo: repo
+                });
+
+                return {
+                    status: 'success',
+                    commits: commits.data
+                }
+            } else {
+                return {
+                    status: 'error',
+                    message: `Couldn't find any repo with that name`
+                }
+            }
+
+            
         } catch (error) {
             return {
                 status: 'error',
