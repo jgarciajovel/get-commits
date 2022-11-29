@@ -21,7 +21,7 @@ Use the Github token you received via email and replace it in the .Env file loca
 
 ```bash
 # watch mode
-$ npm run start:dev
+npm run start:dev
 ```
 
 ## Step 2.
