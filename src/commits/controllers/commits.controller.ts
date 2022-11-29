@@ -1,9 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import e from 'express';
-import { Octokit, App } from "octokit";
-const octokit = new Octokit({
-    auth: process.env.GITHUB_TOKEN
-});
+import { Octokit } from "octokit";
 
 @Controller('commits')
 export class CommitsController {
@@ -23,6 +19,10 @@ export class CommitsController {
             }
 
             if (!!repo) {
+                const octokit = new Octokit({
+                    auth: process.env.GITHUB_TOKEN
+                });
+
                 const commits = await octokit.request('GET /repos/{owner}/{repo}/commits{?sha,path,author,since,until,per_page,page}', {
                     owner: 'jgarciajovel',
                     repo: repo
